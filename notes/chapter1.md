@@ -88,3 +88,148 @@ let result = sum(123, 456);
 
 文件位置：[src/chapter01/02_basis.ts](../src/chapter01/02_basis.ts)
 
+### 变量类型：
+
+|  类型   |       例子        |              描述              |
+| :-----: | :---------------: | :----------------------------: |
+| number  |    1, -33, 2.5    |            任意数字            |
+| string  | 'hi', "hi", `hi`  |           任意字符串           |
+| boolean |    true、false    |       布尔值true或false        |
+| 字面量  |      其本身       |  限制变量的值就是该字面量的值  |
+|   any   |         *         |            任意类型            |
+| unknown |         *         |         类型安全的any          |
+|  void   | 空值（undefined） |     没有值（或undefined）      |
+|  never  |      没有值       |          不能是任何值          |
+| object  |  {name:'孙悟空'}  |          任意的JS对象          |
+|  array  |      [1,2,3]      |           任意JS数组           |
+|  tuple  |       [4,5]       | 元素，TS新增类型，固定长度数组 |
+|  enum   |    enum{A, B}     |       枚举，TS中新增类型       |
+
+**number**
+
+```typescript
+let decimal: number = 6;
+let hex: number = 0xf00d;
+let binary: number = 0b1010;
+let octal: number = 0o744;
+let big: bigint = 100n;
+```
+
+**boolean**
+
+```typescript
+let isDone: boolean = false;
+```
+
+**string**
+
+```typescript
+let color: string = "blue";
+color = 'red';
+
+let fullName: string = `Bob Bobbington`;
+let age: number = 37;
+let sentence: string = `Hello, my name is ${fullName}.
+
+I'll be ${age + 1} years old next month.`;
+```
+
+**字面量**
+
+可以使用字面量去指定变量的类型，通过字面量可以确定变量的取值范围
+
+```typescript
+let color: 'red' | 'blue' | 'black';
+let num: 1 | 2 | 3 | 4 | 5;
+
+// 可以直接使用字面量进行类型声明
+let a: 10;
+a = 10;
+// a = 11; // 字面量只能赋值特定的值，如果赋值其他值，会报错
+
+// 可以使用 | 来连接多个值
+let b: "male" | "female";
+b = "male";
+b = "female";
+// b = "hello"; // 报错
+
+// 可以使用 | 来连接多个类型（联合类型）
+let c: boolean | string;
+c = true;
+c = 'hello';
+```
+
+**any**
+
+- any 表示的是任意类型，一个变量设置类型为any后相当于对该变量关闭了TS的类型检测，使用TS时，不建议使用any类型。
+- 声明变量如果不指定类型，也不在声明时赋值，则TS解析器会自动判断变量的类型为any （隐式的any），这种情况要避免。
+
+```typescript
+let d: any = 4;
+d = 'hello';
+d = true;
+
+let a;
+```
+
+**unknown**
+
+unknown和any的区别：
+
+- any类型的值，可以赋值给其他类型的变量，而unknown类型的值，不可以赋值给其他类型的变量。
+- 通俗理解：any不光霍霍自己，它也能霍霍别人，不仅可以自己的变量的类型检查关闭，还可以让其他变量类型检查关闭。
+- 如果unknown想赋值给其他类型的变量，可以通过类型判断或者断言的方式。
+
+```typescript
+let notSure: unknown = 4;
+notSure = 'hello';
+
+
+let d;
+let s:string;
+// d的类型是any，它可以赋值给任意变量
+// 不建议这样
+// s = d;
+
+
+// unknown 实际上就是一个类型安全的any
+// unknown类型的变量，不能直接赋值给其他变量
+// 如果想赋值给其他类型的变量，可以通过类型判断或者断言的方式
+let e: unknown;
+e = 'hello';
+// 类型判断
+if(typeof e === "string"){
+    s = e;
+}
+// 类型断言，可以用来告诉解析器变量的实际类型
+/*
+* 语法：
+*   变量 as 类型
+*   <类型>变量
+*
+* */
+s = e as string;
+s = <string>e;
+```
+
+**void**
+
+void表示函数没有返回值或者认为返回一个空值，在函数没有确定返回类型，也没有return值时，ts会自动将函数的返回类型定义为void，当然，也可以手动定义，可以是return，return null，return undefined。
+
+```typescript
+let unusable: void = undefined;
+
+function fn(): void{
+}
+```
+
+**never**
+
+never永远不会有返回值，比如函数中跑出一个异常。
+
+```typescript
+function error(message: string): never {
+  throw new Error(message);
+}
+```
+
