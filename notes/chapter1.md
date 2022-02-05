@@ -233,6 +233,8 @@ function error(message: string): never {
 }
 ```
 
+文件位置：[src/chapter01/03_types.ts](../src/chapter01/03_types.ts)
+
 **object（没啥用）**
 
 - 定义object：`let obj: object = {};`
@@ -393,9 +395,5 @@ let k: myType;
 let l: myType;
 ```
 
-
-
-
-
-
+文件位置：[src/chapter01/04_types.ts](../src/chapter01/04_types.ts)
 
