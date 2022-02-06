@@ -2,3 +2,7 @@
 
 # windows
 desktop.ini
+
+# node
+node_modules/
+package-lock.json

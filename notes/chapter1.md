@@ -636,3 +636,130 @@ noUnusedParameters：检查未使用的参数
 
 检查不可达代码，可选值：true，忽略不可达代码；false，不可达代码将引起错误。
 
+## 4、webpack
+
+通常情况下，实际开发中我们都需要使用构建工具对代码进行打包，TS同样也可以结合构建工具一起使用，下边以webpack为例介绍一下如何结合构建工具使用TS。
+
+### 1、初始化项目
+
+进入项目根目录，执行命令 ``` npm init -y```
+
+主要作用：创建package.json文件
+
+### 2、下载构建工具
+
+```npm i -D webpack webpack-cli webpack-dev-server typescript ts-loader clean-webpack-plugin html-webpack-plugin```
+
+共安装了7个包：
+
+- webpack：构建工具webpack
+- webpack-cli：webpack的命令行工具
+- webpack-dev-server：webpack的开发服务器
+- typescript：ts编译器
+- ts-loader：ts加载器，用于在webpack中编译ts文件
+- html-webpack-plugin：webpack中html插件，用来自动创建html文件
+- clean-webpack-plugin：webpack中的清除插件，每次构建都会先清除目录
+
+### 3、根目录下创建webpack的配置文件webpack.config.js
+
+html-webpack-plugin是一个网页模板插件，因为默认情况下，编译出来的只有JS，而JS不能直接在浏览器中运行，需要借助html文件，这个插件就是这个作用。如果直接实例化，html-webpack-plugin会自动提供一个html，可以在options参数中进行配置，title为标题，template为模板，模板是自己创建好的html，html-webpack-plugin会根据代码将编译好的css和js添加到这个模板中。
+
+webpack-dev-server是一个html server插件，并且可以进行热更新，安装webpack-dev-server后，需要在package.json中添加一行script：`"start": "webpack serve --open"`。
+
+clean-webpack-plugin是一个在打包时清除之前打包的内容的一个插件，直接实例化就可以，例子见下面的代码。
+
+当在一个ts文件里面写`import { hi } from './m1';`，表示是要引入一个模块，但是默认情况下，webpack不知道引入的模块是什么文件，所以需要在webpack中配置一下，即`resolve.extensions`，配置好了，再编译就不会出错了。
+
+```javascript
+const path = require("path");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
+
+module.exports = {
+    optimization:{
+        minimize: false // 关闭代码压缩，可选
+    },
+
+    entry: "./src/index.ts",
+    
+    devtool: "inline-source-map",
+    
+    devServer: {
+        contentBase: './dist'
+    },
+
+    output: {
+        path: path.resolve(__dirname, "dist"),
+        filename: "bundle.js",
+        environment: {
+            arrowFunction: false // 关闭webpack的箭头函数，可选
+        }
+    },
+
+    resolve: {
+        extensions: [".ts", ".js"]
+    },
+    
+    module: {
+        rules: [
+            {
+                test: /\.ts$/,
+                use: {
+                   loader: "ts-loader"     
+                },
+                exclude: /node_modules/
+            }
+        ]
+    },
+
+    plugins: [
+        new CleanWebpackPlugin(),
+        new HtmlWebpackPlugin({
+            // 设置html的title
+            //title: 'Title1',
+            // 设置html模板
+            //template: path.resolve(__dirname, 'public', 'index.html')
+        }),
+    ]
+
+}
+```
+
+### 4、根目录下创建tsconfig.json，配置可以根据自己需要
+
+```json
+{
+    "compilerOptions": {
+        "target": "ES2015",
+        "module": "ES2015",
+        "strict": true
+    }
+}
+```
+
+### 5、修改package.json添加如下配置
+
+```json
+{
+  ...略...
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack",
+    "start": "webpack serve --open chrome.exe"
+  },
+  ...略...
+}
+```
+
+### 6、在src下创建ts文件
+
+在src下创建ts文件，并在并命令行执行```npm run build```对代码进行编译，或者执行```npm start```来启动开发服务器
+
+
+
+
+
+
+
+
+
