@@ -397,3 +397,242 @@ let l: myType;
 
 文件位置：[src/chapter01/04_types.ts](../src/chapter01/04_types.ts)
 
+## 3、编译选项
+
+### 自动编译文件
+
+编译文件时，使用 -w 指令后，TS编译器会自动监视文件的变化，并在文件发生变化时对文件进行重新编译。示例：
+
+```powershell
+tsc xxx.ts -w
+```
+
+### 自动编译整个项目
+
+如果直接使用`tsc`指令，则可以自动将当前项目下的所有ts文件编译为js文件。但是能直接使用`tsc`命令的前提是，要先在项目根目录下创建一个ts的配置文件 `tsconfig.json`。`tsconfig.json`是一个JSON文件，添加配置文件后，只需只需 tsc 命令即可完成对整个项目的编译。
+
+有了`tsconfig.json`（即使该文件为空），就可以直接执行`tsc`命令，编译所有文件，也可以使用`tsc -w`，监视所有文件变化。
+
+### tsconfig.json配置选项
+
+- 首先说明的是，tsconfig.json里面是可以写注释的。
+- 一个小技巧：想要知道某个选项可以设置什么值，可以写一个错误的，但是编译，在终端中就会打印出可以填写的值。
+
+**include：**
+
+定义希望被编译文件所在的目录。默认值：["\*\*/\*"]。\** 表示任意目录，\* 表示任意文件。示例：
+
+```json
+"include":["src/**/*", "tests/**/*"]
+```
+
+上述示例中，所有src目录和tests目录下的文件都会被编译。
+
+**exclude：**
+
+定义需要排除在外的目录，默认值：["node_modules", "bower_components", "jspm_packages"]和outDir目录。示例：
+
+```json
+"exclude": ["./src/hello/**/*"]
+```
+
+上述示例中，src下hello目录下的文件都不会被编译
+
+**extends：**
+
+定义被继承的配置文件，示例：
+
+```json
+"extends": "./configs/base"
+```
+
+上述示例中，当前配置文件中会自动包含config目录下base.json中的所有配置信息。
+
+**files：**
+
+指定被编译文件的列表，只有需要编译的文件少时才会用到，示例：
+
+```json
+"files": [
+    "core.ts",
+    "sys.ts",
+    "types.ts",
+    "scanner.ts",
+    "parser.ts",
+    "utilities.ts",
+    "binder.ts",
+    "checker.ts",
+    "tsc.ts"
+  ]
+```
+
+列表中的文件都会被TS编译器所编译。
+
+**compilerOptions：**
+
+编译选项是配置文件中非常重要也比较复杂的配置选项，在compilerOptions中包含多个子选项，用来完成对编译的配置。
+
+### tsconfig.json中compilerOptions项目选项
+
+**target：**
+
+设置ts代码编译的目标版本，可选值：ES3（默认）、ES5、ES6/ES2015、ES7/ES2016、ES2017、ES2018、ES2019、ES2020、ESNext
+
+示例：
+
+```json
+"compilerOptions": {
+    "target": "ES6"
+}
+```
+
+如上设置，我们所编写的ts代码将会被编译为ES6版本的js代码。
+
+**lib：**
+
+指定代码运行时所包含的库（宿主环境），可选值：ES5、ES6/ES2015、ES7/ES2016、ES2017、ES2018、ES2019、ES2020、ESNext、DOM、WebWorker、ScriptHost ......，默认情况下，不用写该属性。
+
+示例：
+
+```json
+"compilerOptions": {
+    "target": "ES6",
+    "lib": ["ES6", "DOM"],
+    "outDir": "dist",
+    "outFile": "dist/aa.js"
+}
+```
+
+**module：**
+
+设置编译后代码使用的模块化系统，可选值：CommonJS、UMD、AMD、System、ES2020、ESNext、None
+
+示例：
+
+```typescript
+"compilerOptions": {
+    "module": "CommonJS"
+}
+```
+
+**outDir：**
+
+编译后文件的所在目录，默认情况下，编译后的js文件会和ts文件位于相同的目录，设置outDir后可以改变编译后文件的位置
+
+示例：
+
+```json
+"compilerOptions": {
+    "outDir": "dist"
+}
+```
+
+设置后编译后的js文件将会生成到dist目录。
+
+**outFile：**
+
+将所有的文件编译为一个js文件，默认会将所有的编写在全局作用域中的代码合并为一个js文件，如果module制定了None、System或AMD则会将模块一起合并到文件之中
+
+示例：
+
+```json
+"compilerOptions": {
+    "outFile": "dist/app.js"
+}
+```
+
+**rootDir：**
+
+指定代码的根目录，默认情况下编译后文件的目录结构会以最长的公共目录为根目录，通过rootDir可以手动指定根目录
+
+示例：
+
+```json
+"compilerOptions": {
+    "rootDir": "./src"
+}
+```
+
+**allowJs：**
+
+是否对js文件编译，如果要使用某些JS模块，可以将该属性设置为true
+
+**checkJs：**
+
+是否对js文件进行检查
+
+示例：
+
+```json
+"compilerOptions": {
+    "allowJs": true,
+    "checkJs": true
+}
+```
+
+**removeComments：**
+
+编译后是否移除注释，默认值：false
+
+**noEmit：**
+
+不对代码进行编译，默认值：false，这个功能可以用来作为代码检查使用。
+
+**noEmitOnError：**
+
+当有错误时不生成编译后的文件，默认值：false。
+
+**sourceMap：**
+
+是否生成sourceMap，默认值：false
+
+### 严格检查
+
+**strict：**
+
+启用所有的严格检查，默认值为true，设置后相当于开启了所有的严格检查
+
+**alwaysStrict：**
+
+总是以严格模式对代码进行编译，如果ts之间没有import和export，那么就会在JS中添加`"use strict"`；如果ts之间有import和export，那么JS也会有import和export，在JS有import和export的情况下，会自动进入严格模式，所以就不会再加`"use strict"`。
+
+**noImplicitAny：**
+
+禁止隐式的any类型。
+
+**noImplicitThis：**
+
+禁止类型不明确的this。
+
+**strictBindCallApply：**
+
+严格检查bind、call和apply的参数列表。
+
+**strictFunctionTypes：**
+
+严格检查函数的类型。
+
+**strictNullChecks：**
+
+严格的空值检查。
+
+**strictPropertyInitialization：**
+
+严格检查属性是否初始化。
+
+### 额外检查
+
+noFallthroughCasesInSwitch：检查switch语句包含正确的break
+
+noImplicitReturns：检查函数没有隐式的返回值
+
+noUnusedLocals：检查未使用的局部变量
+
+noUnusedParameters：检查未使用的参数
+
+### 高级
+
+**allowUnreachableCode：**
+
+检查不可达代码，可选值：true，忽略不可达代码；false，不可达代码将引起错误。
+
