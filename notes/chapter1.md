@@ -670,6 +670,8 @@ clean-webpack-plugin是一个在打包时清除之前打包的内容的一个插
 
 当在一个ts文件里面写`import { hi } from './m1';`，表示是要引入一个模块，但是默认情况下，webpack不知道引入的模块是什么文件，所以需要在webpack中配置一下，即`resolve.extensions`，配置好了，再编译就不会出错了。
 
+output.environment.arrowFunction是表示Webpack打包时，是否使用箭头函数，如果要在IE中使用，就要将这个属性设置为false，因为IE的所有版本，都不支持箭头函数。这个设置的是Webpack打包时附加的代码是否使用箭头函数，而不是我们自己写的，我们自己写的箭头函数，可以通过babel来完成兼容性处理。
+
 ```javascript
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
@@ -755,11 +757,63 @@ module.exports = {
 
 在src下创建ts文件，并在并命令行执行```npm run build```对代码进行编译，或者执行```npm start```来启动开发服务器
 
+## 5、Babel
 
+经过一系列的配置，使得TS和webpack已经结合到了一起，除了webpack，开发中还经常需要结合babel来对代码进行转换以使其可以兼容到更多的浏览器，在上述步骤的基础上，通过以下步骤再将babel引入到项目中。
 
+安装依赖包：```npm i -D @babel/core @babel/preset-env babel-loader core-js```
 
+共安装了4个包，分别是：
 
+- @babel/core：babel的核心工具
+- @babel/preset-env：babel的预定义环境
+- @babel-loader：babel在webpack中的加载器
+- core-js：core-js用来使老版本的浏览器支持新版ES语法
 
+**修改webpack.config.js配置文件**
 
+webpack的use中，有两种写法，如果不写配置，直接使用字符串就可以，如果写配置，可以像下面的代码实例使用对象的形式。
 
+babel-loader中的options都是babel-loader的配置，具体如何配置，可以参考babel的网站。targets表示兼容的最低浏览器版本，corejs表示对于低版本没有的功能，会通过corejs来添加babel自己实现的功能，这里使用的是版本3；`"useBuiltIns": "usage"`表示的是按需引入，使用到了哪个功能，会打包哪个功能，这样可以减少包的体积，提高代码运行效率。
+
+```javascript
+...略...
+module: {
+    rules: [
+        {
+            test: /\.ts$/,
+            use: [
+                {
+                    loader: "babel-loader",
+                    options:{
+                        presets: [
+                            [
+                                "@babel/preset-env",
+                                {
+                                    "targets":{
+                                        "chrome": "58",
+                                        "ie": "11"
+                                    },
+                                    "corejs":"3",
+                                    "useBuiltIns": "usage"
+                                }
+                            ]
+                        ]
+                    }
+                },
+                {
+                    loader: "ts-loader",
+
+                }
+            ],
+            exclude: /node_modules/
+        }
+    ]
+}
+...略...
+```
+
+如此一来，使用ts编译后的文件将会再次被babel处理，使得代码可以在大部分浏览器中直接使用，可以在配置选项的targets中指定要兼容的浏览器版本。
+
+注意：babel在做兼容性处理时，不会处理webpack打包时最外层的箭头函数，如果在IE上运行，需要在webpack中的output.environment.arrowFunction设置为false。
 
