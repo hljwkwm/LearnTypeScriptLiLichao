@@ -636,6 +636,8 @@ noUnusedParameters：检查未使用的参数
 
 检查不可达代码，可选值：true，忽略不可达代码；false，不可达代码将引起错误。
 
+代码位置在`src/chapter01_part2`中。
+
 ## 4、webpack
 
 通常情况下，实际开发中我们都需要使用构建工具对代码进行打包，TS同样也可以结合构建工具一起使用，下边以webpack为例介绍一下如何结合构建工具使用TS。
@@ -817,3 +819,4 @@ module: {
 
 注意：babel在做兼容性处理时，不会处理webpack打包时最外层的箭头函数，如果在IE上运行，需要在webpack中的output.environment.arrowFunction设置为false。
 
+代码位置在`src/chapter01_part3`目录下。
