@@ -308,7 +308,19 @@ class Dog extends Animals{
 
 使用abstract开头的方法叫做抽象方法，抽象方法没有方法体只能定义在抽象类中，继承抽象类时抽象方法必须要实现。
 
+### 一个简便写法
 
+以下写法可以直接声明类的对象并赋值，是一种简便写法：
+
+```typescript
+class C{
+
+  // 可以直接将属性定义在构造函数中
+  constructor(public name: string, public age: number) {
+  }
+
+}
+```
 
 
 
